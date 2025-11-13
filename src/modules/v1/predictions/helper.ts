@@ -9,11 +9,11 @@ export const leaderboardPipeline = (
     userIds = [] as string[],
     fromDate: string,
     toDate: string,
-    contest: string
+    pool: string
 ) => [
     {
         $match: {
-            ...(contest && {
+            ...(pool && {
                 _id: { $in: userIds.map(userId => new Types.ObjectId(userId)) },
             }),
         },

@@ -1,5 +1,7 @@
 export { default as UserModel } from "./models/user";
 export { default as PinModel } from "./models/pin";
+export { default as PoolModel } from "./models/pool";
+export { default as PoolMemberModel } from "./models/pool-member";
 export { default as WalletModel } from "./models/wallet";
 export { default as MatchModel } from "./models/matches";
 export { default as MemberModel } from "./models/member";

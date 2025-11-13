@@ -75,9 +75,6 @@ export const login = async (
             }).findOne()
         )
 
-        console.log(user)
-        console.log({ password })
-
         if (error) throw catchError("Error processing request", 400)
 
         if (!user) throw catchError("Email/Password is incorrect", 404)        
@@ -96,6 +93,7 @@ export const login = async (
                     verificationStatus: !!user.verifiedAt,
                     email: user.email,
                     phoneNumber: user.phoneNumber,
+                    _id: user._id
                 },
                 { token }
             )

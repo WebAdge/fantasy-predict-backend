@@ -16,6 +16,8 @@ import feedbackRouter from "./feedbacks/route";
 import memberRouter from "./members/route";
 import contestRouter from "./contests/route";
 import settlementRouter from "./settlement/routes";
+import poolRouter from "./pools/route";
+import poolMemberRouter from "./pool-members/route";
 
 const router = Router();
 router.use("/users", userRouter);
@@ -30,6 +32,8 @@ router.use("/withdrawals", Authenticate, withdrawalRouter);
 router.use("/members", Authenticate, memberRouter);
 router.use("/competitions", Authenticate, competitionRouter);
 router.use("/transactions", Authenticate, transactionRouter);
+router.use("/pools", Authenticate, poolRouter);
+router.use("/pool-members", Authenticate, poolMemberRouter);
 router.use("/user-competitions", Authenticate, userCompetitionRouter);
 
 router.get("/pay", securePayment)

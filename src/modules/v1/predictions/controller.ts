@@ -8,7 +8,7 @@ import { leaderboardPipeline } from "./helper"
 import UserService from "../users/service"
 import PoolMemberService from "../members/service"
 import { isAfter } from "date-fns"
-import MemberService from "../members/service"
+
 
 export const create = async (
     req: Request,
@@ -58,13 +58,13 @@ export const leaderboard = async (
     res: Response,
     next: NextFunction
 ) => {
-    const { competition, fromDate, toDate, contest } = req.query
+    const { competition, fromDate, toDate, pool } = req.query
     try {
         
             const [members, error] = await tryPromise(
-                new MemberService({}).findAll({
-                contest,
-                    status: "approved",
+                new PoolMemberService({}).findAll({
+                pool,
+                status: "approved",
                 })
             )
 
@@ -78,7 +78,7 @@ export const leaderboard = async (
                 memberIds,
                 fromDate as string,
                 toDate as string,
-                contest as string
+                pool as string
             )
         )
 

@@ -62,6 +62,7 @@ export const securePayment = async (
         const user = await new UserService({
             email: decodeURIComponent(email as string),
         }).findOne()
+        console.log(user, decodeURIComponent(email as string), email)
         if (!user) throw catchError("Invalid Access", 400)
         const wallet = await new WalletService({
             user: String(user._id),
