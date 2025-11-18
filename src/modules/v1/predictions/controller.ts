@@ -9,7 +9,6 @@ import UserService from "../users/service"
 import PoolMemberService from "../members/service"
 import { isAfter } from "date-fns"
 
-
 export const create = async (
     req: Request,
     res: Response,
@@ -31,7 +30,7 @@ export const create = async (
 
         if (dbPrediction) {
             await new PredictionService({ _id: dbPrediction._id }).update({
-                outcome
+                outcome,
             })
         } else {
             await new PredictionService({}).create({
@@ -41,7 +40,7 @@ export const create = async (
                 outcome,
                 point: 0,
                 competition,
-                status: "pending"
+                status: "pending",
             })
         }
 
@@ -60,17 +59,17 @@ export const leaderboard = async (
 ) => {
     const { competition, fromDate, toDate, pool } = req.query
     try {
-        
-            const [members, error] = await tryPromise(
-                new PoolMemberService({}).findAll({
+        const [members, error] = await tryPromise(
+            new PoolMemberService({}).findAll({
                 pool,
                 status: "approved",
-                })
-            )
+            })
+        )
 
-            if (error) throw catchError("Error processing request", 400)
-            const memberIds = members?.docs.map(doc => doc.user) || []
-                    
+        if (error) throw catchError("Error processing request", 400)
+        const memberIds = members?.docs.map(doc => doc.user) || []
+    console.log({memberIds})
+
         const leaderboard = await new UserService({}).aggregate(
             // @ts-ignore
             leaderboardPipeline(
