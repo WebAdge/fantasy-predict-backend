@@ -19,7 +19,7 @@
     "start": "node -r dotenv/config build/app.js",
     "deploy": "yarn build && yarn start",
     "lint": "eslint --ext .ts --ignore-path .gitignore .",
-    "build": "yarn install && tsc -p .",
+    "build": "tsc -p .",
     "prepare": "husky install",
     "docker-build": "docker build -t FantasyPredict ./",
     "docker": "docker run FantasyPredict",
