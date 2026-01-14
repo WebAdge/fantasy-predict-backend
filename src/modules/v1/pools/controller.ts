@@ -54,7 +54,7 @@ export const create = async (
                     gameWeeksParticipated: [],
                     totalAmountSpent: req.body.config.amount,
                     status: "approved" as any,
-                    type: 'captain'
+                    type: "captain",
                 },
                 session
             )
@@ -81,27 +81,32 @@ export const fetch = async (
                 Number(page),
                 Number(limit),
                 [
-                    { path: 'createdBy', select: 'firstName lastName avatar username' },
-                    { path: 'competition', select: 'name logo code' }
+                    {
+                        path: "createdBy",
+                        select: "firstName lastName avatar username",
+                    },
+                    { path: "competition", select: "name logo code" },
                 ]
             )
         )
 
         if (error) throw catchError("Errors retrieving users", 400)
+        let result = pools
+        result?.docs.map(doc => ({
+            ...doc,
+            // @ts-ignore
+            isCreator: String(doc.createdBy._id) === String(req.user._id),
+        }))
 
-        return res.status(200).json(success("Pools retrieved", pools))
+        return res.status(200).json(success("Pools retrieved", result))
     } catch (error) {
         next(error)
     }
 }
 
-export const get = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const pool = await new PoolService({ _id: req.params.id }).findOne({});
+        const pool = await new PoolService({ _id: req.params.id }).findOne({})
 
         return res.status(200).json(success("Pool retrieved", pool))
     } catch (error) {
