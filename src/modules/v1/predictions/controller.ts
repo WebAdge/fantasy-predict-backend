@@ -68,7 +68,7 @@ export const leaderboard = async (
 
         if (error) throw catchError("Error processing request", 400)
         const memberIds = members?.docs.map(doc => doc.user) || []
-    console.log({memberIds})
+        console.log({ memberIds })
 
         const leaderboard = await new UserService({}).aggregate(
             // @ts-ignore
@@ -119,6 +119,33 @@ export const applicationInReview = async (
         return res
             .status(200)
             .json(success("Leaderboard retrieved", leaderboard))
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const competitionLeaderboard = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { competition } = req.query
+    try {
+        const personalLeaderboard = await new PredictionService(
+            {}
+        ).getPredictionLeaderboard(competition as string, String(req.user._id))
+        const result = await new PredictionService({}).getPredictionLeaderboard(
+            competition as string
+        )
+
+        return res
+            .status(200)
+            .json(
+                success("Result retrieved", {
+                    board: result,
+                    personalRank: personalLeaderboard,
+                })
+            )
     } catch (error) {
         next(error)
     }

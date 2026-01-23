@@ -92,11 +92,13 @@ export const fetch = async (
 
         if (error) throw catchError("Errors retrieving users", 400)
         let result = pools
-        result?.docs.map(doc => ({
-            ...doc,
-            // @ts-ignore
-            isCreator: String(doc.createdBy._id) === String(req.user._id),
-        }))
+        if (result) {
+            result.docs = result?.docs.map(doc => ({
+                ...doc,
+                // @ts-ignore
+                isCreator: String(doc.createdBy._id) === String(req.user._id),
+            }))
+        }
 
         return res.status(200).json(success("Pools retrieved", result))
     } catch (error) {
@@ -104,9 +106,35 @@ export const fetch = async (
     }
 }
 
+export const poolLeaderboar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const [pools, error] = await tryPromise(
+            new PoolService({}).poolLeaderboard(String(req.user._id))
+        )
+
+        if (error) throw catchError("Errors retrieving users", 400)
+
+        return res.status(200).json(success("Pools retrieved", pools))
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const get = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const pool = await new PoolService({ _id: req.params.id }).findOne({})
+        const pool = await new PoolService({ _id: req.params.id }).findOne({
+            populate: [
+                {
+                    path: "createdBy",
+                    select: "firstName lastName avatar username",
+                },
+                { path: "competition", select: "name logo code" },
+            ],
+        })
 
         return res.status(200).json(success("Pool retrieved", pool))
     } catch (error) {

@@ -3,7 +3,7 @@
 import { Router } from "express"
 
 import { createSchema, fetchSchema } from "./validation"
-import { create, fetch, get, } from "./controller"
+import { create, fetch, get, poolLeaderboar, } from "./controller"
 import { validator } from "../../common/utils"
 import { validateCreate } from "./middleware"
 
@@ -23,6 +23,11 @@ poolRouter.get(
     "/",
     validator.query(fetchSchema),
     fetch
+)
+
+poolRouter.get(
+    "/leadboard/pool",
+    poolLeaderboar
 )
 
 poolRouter.get(

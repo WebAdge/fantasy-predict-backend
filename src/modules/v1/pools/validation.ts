@@ -39,6 +39,7 @@ export const createSchema = z
         name: z.string().optional(),
         privacy: z.string().optional(),
         createdBy: z.string().optional(),
+        personal: z.string().optional(),
     })
     .strict()
 

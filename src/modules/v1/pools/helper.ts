@@ -6,12 +6,13 @@ import PoolService from "./service"
 import { addYears } from "date-fns"
 
 export const composeFilter = (req: Request) => {
-    const { name, createdBy, privacy } = req.query
+    const { name, createdBy, privacy, personal } = req.query
     let filter = {}
 
     if (name) filter = { ...filter, name }
     if (createdBy) filter = { ...filter, createdBy }
     if (privacy) filter = { ...filter, privacy }
+    if (personal) filter = { createdBy: String(req.user._id) }
 
     return filter
 }
