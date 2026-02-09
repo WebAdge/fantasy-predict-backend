@@ -16,8 +16,8 @@ export const getMatchWeek = async (query: Record<string, string>) => {
         new MatchService({}).aggregate(matchPipeline(query, userId))
     )
 
-    console.log({error});
-    console.log({matches});
+    console.log({ error })
+    console.log({ matches })
     if (error) throw catchError("Error processing request")
     result = matches || []
     if (!matches?.length) {
@@ -25,7 +25,7 @@ export const getMatchWeek = async (query: Record<string, string>) => {
             _id: competition,
         }).findOne()
 
-        console.log({comp});
+        console.log({ comp })
         if (!comp) throw catchError("Error processing request", 400)
         const date = {
             dateFrom: format(startOfWeek(new Date()), "yyyy-MM-dd"),
@@ -67,17 +67,69 @@ export const fetch = async (
     next: NextFunction
 ) => {
     try {
+        let result
         const [matches] = await tryPromise(
-            new MatchService({}).aggregate(matchPipeline({ ...req.query as any }, String(req.user._id)))
+            new MatchService({}).aggregate(
+                matchPipeline({ ...(req.query as any) }, String(req.user._id))
+            )
         )
-        // const matches = getMatchWeek({
-        //     ...req.query,
-        //     userId: req.user._id,
-        // } as Record<string, string>)
+
+        result = matches || []
+
+        if (!matches) {
+            await getMatchWeek({
+                ...req.query,
+                userId: req.user._id,
+            } as Record<string, string>)
+            const [mths] = await tryPromise(
+                new MatchService({}).aggregate(
+                    matchPipeline(
+                        { ...(req.query as any) },
+                        String(req.user._id)
+                    )
+                )
+            )
+            result = mths || []
+        }
 
         return res
             .status(200)
-            .json(success("Match retrieved successfully", matches || []))
+            .json(success("Match retrieved successfully", result || []))
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const fetchByMatchday = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { matchday, competition } = req.query
+    try {
+        const [matches] = await tryPromise(
+            new MatchService({}).aggregate(
+                matchPipeline(
+                    {
+                        matchday: String(matchday),
+                        competition: String(competition),
+                    },
+                    String(req.user._id)
+                )
+            )
+        )
+
+        const [comp] = await tryPromise(
+            new CompetitionService({ _id: String(competition) }).findOne()
+        )
+        return res
+            .status(200)
+            .json(
+                success("Match retrieved successfully", {
+                    matches: matches || [],
+                    competition: comp,
+                })
+            )
     } catch (error) {
         next(error)
     }
@@ -97,8 +149,8 @@ export const fetchScore = async (
             )
         )
 
-        console.log(error);
-        if (error) throw catchError("Error processing request");
+        console.log(error)
+        if (error) throw catchError("Error processing request")
 
         return res
             .status(200)

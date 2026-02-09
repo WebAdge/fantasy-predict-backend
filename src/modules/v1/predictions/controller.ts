@@ -8,6 +8,9 @@ import { leaderboardPipeline } from "./helper"
 import UserService from "../users/service"
 import PoolMemberService from "../members/service"
 import { isAfter } from "date-fns"
+import Email from "../../thirdpartyApi/zeptomail"
+import { generatePicksEmail } from "../../mails/pickMail"
+import { matchPipeline } from "../matches/helper"
 
 export const create = async (
     req: Request,
@@ -145,6 +148,36 @@ export const competitionLeaderboard = async (
                     board: result,
                     personalRank: personalLeaderboard,
                 })
+            )
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const sendPredictionMail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { matchday, competition } = req.body;
+    try {
+        const result = await new UserService({ _id: String(req.user._id) }).findOne();
+        if (!result) throw catchError("User not found", 404)
+            const [matches] = await tryPromise(
+            new MatchService({}).aggregate(
+                matchPipeline(
+                    {
+                        matchday: String(matchday),
+                        competition: String(competition),
+                    },
+                    String(req.user._id)
+                )
+            )
+        )
+        new Email().SendEmail(
+                result,
+                "Your verification code",
+                generatePicksEmail({ round: `Matchday ${matchday} Picks`, picks: matches || [] as any })
             )
     } catch (error) {
         next(error)

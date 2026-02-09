@@ -2,7 +2,7 @@
 
 import { Router } from "express"
 
-import { fetch, fetchScore } from "./controller"
+import { fetch, fetchByMatchday, fetchScore } from "./controller"
 
 const matchRouter = Router({
     caseSensitive: true,
@@ -10,6 +10,7 @@ const matchRouter = Router({
 })
 
 matchRouter.get("/", fetch)
+matchRouter.get("/matchday", fetchByMatchday)
 matchRouter.get("/score", fetchScore)
 
 export default matchRouter

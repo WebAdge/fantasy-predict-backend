@@ -20,8 +20,8 @@ class Email {
         try {
             await this.client.sendMail({
                 from: {
-                    address: "noreply@predictcontest.com", // to be changed
-                    name: "Predict Contest",
+                    address: "noreply@fantasy-predict.com", // to be changed
+                    name: "Fantasy Predict",
                 },
                 to: [
                     {
