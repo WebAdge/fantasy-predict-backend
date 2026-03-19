@@ -14,3 +14,4 @@ export { default as ContestModel } from "./models/contest";
 export { default as WithdrawalModel } from "./models/withdrawal";
 export { default as UserCompetitionModel } from "./models/user-competition";
 export { default as SettlementModel } from "./models/settlements";
+export { default as AdminModel } from "./models/admin";

@@ -67,8 +67,7 @@ export const leaderboard = async (
         )
 
         if (error) throw catchError("Error processing request", 400)
-        const memberIds = members?.docs.map(doc => doc.user) || []
-    console.log({memberIds})
+        const memberIds = members?.docs.map(doc => doc.user) || []    
 
         const leaderboard = await new UserService({}).aggregate(
             // @ts-ignore
@@ -119,6 +118,28 @@ export const applicationInReview = async (
         return res
             .status(200)
             .json(success("Leaderboard retrieved", leaderboard))
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const fetch = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { page = 1, limit = 10 } = req.query;
+    try {
+        const predictions = await new PredictionService({}).findAll(
+            {},
+            Number(page),
+            Number(limit),
+            [{ path: 'user', select: 'firstName lastName username' }, { path: "match", select: "matchday status homeTeam awayTeam" }, { path: "competition", select: "name code" }]
+        )
+
+        return res.status(200).json(
+            success("Prediction retrieved", predictions)
+        )
     } catch (error) {
         next(error)
     }
