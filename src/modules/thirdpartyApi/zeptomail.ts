@@ -34,12 +34,15 @@ class Email {
                 subject: subject,
                 htmlbody: message,
             })
+
+            console.log("EMAIL SENT SUCCESSFULLY");
     
             return {
                 status: "success",
                 message: "Mail successfully sent",
             }
         } catch (error) {
+            console.log(error, "EMAIL ERROR");
             return {
                 status: "failure",
                 message: error,

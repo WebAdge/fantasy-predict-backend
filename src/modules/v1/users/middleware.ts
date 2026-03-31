@@ -173,6 +173,7 @@ export const validateForgetPassword = async (
         const otp = randomInt(100000, 999999)
         if (!user) throw catchError("Invalid request", 400)
         if (user) {
+            console.log("FORGOT PASSWORD INITIATED");
             new Email().SendEmail(
                 user,
                 "Forgot Password?",

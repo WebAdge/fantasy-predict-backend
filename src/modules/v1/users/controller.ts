@@ -34,7 +34,9 @@ export const create = async (
 
             if (user) {
                 result = user
-                await joinWorldCupLeaderboard(String(user._id)).catch(() => null);
+                await joinWorldCupLeaderboard(String(user._id)).catch(
+                    () => null
+                )
             }
 
             if (crtError) throw catchError("An error occurred! Try again", 400)
@@ -79,10 +81,22 @@ export const login = async (
 
         if (error) throw catchError("Error processing request", 400)
 
-        if (!user) throw catchError("Email/Password is incorrect", 404)        
+        if (!user) throw catchError("Email/Password is incorrect", 404)
         console.log(decrytData(user.password), password, user.password)
         if (decrytData(user.password) !== password)
             throw catchError("Email/Password is incorrect", 400)
+
+        if (!user.verifiedAt) {
+            const otp = randomInt(100000, 999999)
+            await new UserService({ _id: user._id }).update({
+                otp: String(otp),
+            })
+            new Email().SendEmail(
+                user,
+                "Your verification code",
+                verifyAccountMail(req.body.firstName, otp.toString())
+            )
+        }
 
         const token = encryptData(
             JSON.stringify({ _id: user._id, exp: addHours(new Date(), 48) })
@@ -95,7 +109,7 @@ export const login = async (
                     verificationStatus: !!user.verifiedAt,
                     email: user.email,
                     phoneNumber: user.phoneNumber,
-                    _id: user._id
+                    _id: user._id,
                 },
                 { token }
             )
