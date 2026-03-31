@@ -11,6 +11,7 @@ import { db } from "../../../databases/connection"
 import { IUser } from "../../../types"
 import Email from "../../thirdpartyApi/zeptomail"
 import { verifyAccountMail } from "../../mails/verifyAccount"
+import { joinWorldCupLeaderboard } from "../pool-members/helper"
 
 export const create = async (
     req: Request,
@@ -33,6 +34,7 @@ export const create = async (
 
             if (user) {
                 result = user
+                await joinWorldCupLeaderboard(String(user._id)).catch(() => null);
             }
 
             if (crtError) throw catchError("An error occurred! Try again", 400)

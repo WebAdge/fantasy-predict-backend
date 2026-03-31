@@ -43,8 +43,8 @@ export const create = async (
                     transactionMeta: { pool: name, action: "create pool" },
                 })
             }
-
-            await new PoolService({ _id: pool }).update({
+            
+            await new PoolService({ _id: pool._id }).update({
                 totalMembers: Number(pool.totalMembers) + 1,
             })
         })

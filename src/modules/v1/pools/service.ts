@@ -24,6 +24,11 @@ class PoolService extends BaseRepository<IPool> {
                 },
             },
             {
+                $sort: {
+                    createdAt: 1,
+                },
+            },
+            {
                 $lookup: {
                     from: "competitions",
                     localField: "competitionObjId",
