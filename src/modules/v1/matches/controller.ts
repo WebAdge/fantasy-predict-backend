@@ -36,7 +36,9 @@ export const getMatchWeek = async (query: Record<string, string>) => {
             { ...date }
         )
 
-        const newMatches = matchQuery.map(match => ({
+        console.log(matchQuery, "QQQ")
+
+        const newMatches = matchQuery.filter(item => item.homeTeam.name && item.awayTeam.name).map(match => ({
             status: match.status.toLowerCase(),
             matchId: String(match.id),
             homeTeam: {
@@ -83,7 +85,7 @@ export const fetch = async (
 
         return res
             .status(200)
-            .json(success("Match retrieved successfully", matches || []))
+            .json(success("Match retrieved successfully", result || []))
     } catch (error) {
         next(error)
     }
