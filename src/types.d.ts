@@ -26,6 +26,7 @@ interface IUser extends DefaultAttributes {
     isActive: boolean
     avatar: string
     sendNotification: boolean
+    worldCupCampaign: number;
 }
 
 interface IWallet extends DefaultAttributes {

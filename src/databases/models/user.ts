@@ -22,6 +22,7 @@ const UserSchema: Schema = new Schema<IUser>(
         avatar: { type: "String" },
         sendNotification: { type: "Boolean", default: true },
         gender: { type: "String" },
+        worldCupCampaign: { type: "Number", default: 0 },
         bvn: { type: "String" },
         dateOfBirth: { type: "Date", default: new Date() },
         deletedAt: { type: "String", default: null },

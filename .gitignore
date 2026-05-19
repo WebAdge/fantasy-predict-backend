@@ -1,6 +1,6 @@
 node_modules
-.env
 yarn-error.log
 
 build
 coverage
+config.bat
