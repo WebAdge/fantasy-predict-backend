@@ -342,7 +342,7 @@ function generate() {
             title: "Fantasy Predict Backend API",
             version: "1.0.0",
             description:
-                "Auto-generated from Express routes and Zod validation schemas. Regenerate with `yarn docs:generate` after changing any route.ts or validation.ts file.",
+                "Use the schemas and endpoints below for integration",
         },
         servers: [{ url: process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 8080}` }],
         tags,
