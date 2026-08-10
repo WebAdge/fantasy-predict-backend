@@ -4,3 +4,5 @@ yarn-error.log
 build
 coverage
 config.bat
+
+public/openapi.json
