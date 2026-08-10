@@ -1,8 +1,11 @@
 /** @format */
 
+import fs from "fs"
+import path from "path"
 import cors from "cors"
 import helmet from "helmet"
 import express from "express"
+import swaggerUi from "swagger-ui-express"
 import "./modules/common/utils/config"
 import "./modules/common/jobs/auto-jobs"
 
@@ -53,6 +56,17 @@ app.use(express.static("public"))
 app.disable("x-powered-by")
 
 app.set("view engine", "ejs")
+
+// API docs, generated from routes + Zod schemas via `yarn docs:generate`
+try {
+    const openapiPath = path.join(process.cwd(), "public", "openapi.json")
+    const openapiDocument = JSON.parse(fs.readFileSync(openapiPath, "utf8"))
+    // swagger-ui-express ships its own (newer) @types/express, which conflicts
+    // with this project's @types/express@4 — cast at the boundary.
+    app.use("/api-docs", swaggerUi.serve as any, swaggerUi.setup(openapiDocument) as any)
+} catch (error) {
+    console.log("\x1b[33m", "API docs not mounted: run `yarn docs:generate` to generate public/openapi.json")
+}
 
 app.use("/", routes)
 

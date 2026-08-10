@@ -18,9 +18,11 @@ import contestRouter from "./contests/route";
 import settlementRouter from "./settlement/routes";
 import poolRouter from "./pools/route";
 import poolMemberRouter from "./pool-members/route";
+import adminRouter from "./admins/route";
 
 const router = Router();
 router.use("/users", userRouter);
+router.use("/admins", adminRouter);
 router.use("/pins", Authenticate, pinRouter);
 router.use("/banks", Authenticate, bankRouter);
 router.use("/matches", Authenticate, matchRouter);

@@ -29,6 +29,14 @@ interface IUser extends DefaultAttributes {
     worldCupCampaign: number;
 }
 
+interface IAdmin extends DefaultAttributes {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+    isActive: boolean
+}
+
 interface IWallet extends DefaultAttributes {
     user: string
     balance: number
@@ -467,7 +475,8 @@ type Token = IUser & { time: Date }
 
 declare module "express-serve-static-core" {
     export interface Request {
-        user: IUser
+        user: IUser;
+        admin: IAdmin
     }
 }
 

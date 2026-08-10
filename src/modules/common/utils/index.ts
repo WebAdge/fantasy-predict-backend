@@ -8,6 +8,7 @@ import { IUser, AppError, CreateErr, Token } from "../../../types"
 import { decrytData, encryptData } from "../hashings"
 import { validationResult } from "express-validator"
 import UserService from "../../v1/users/service"
+import AdminService from "../../v1/admins/service"
 
 export const catchError: CreateErr = (
     message,
@@ -46,7 +47,7 @@ export const Authenticate = async (
         if (!token) throw catchError("No Authorization header provided", 401)
 
         let user = decrytData(token)
-        const parsedUser = JSON.parse(user) as { _id: string; exp: Date };
+        const parsedUser = JSON.parse(user) as { _id: string; exp: Date; type: string };
         const [newUser, error] = await tryPromise(
             new UserService({ _id: parsedUser._id }).findOne(),
         )
@@ -59,6 +60,25 @@ export const Authenticate = async (
         }
 
         req.user = newUser
+        if (parsedUser?.type === "admin") {
+            const [adminUser, error] = await tryPromise(
+                new AdminService({ _id: parsedUser._id }).findOne()
+            )
+
+            if (error) throw catchError("Unathorized", 401);
+            if (!adminUser) throw catchError("Unathorized", 401);
+
+            req.admin = adminUser;
+        } else {
+            const [newUser, error] = await tryPromise(
+                new UserService({ _id: parsedUser._id }).findOne(),
+            )
+    
+            if (error) throw catchError("Unathorized", 401);
+            if (!newUser) throw catchError("Unathorized", 401);
+
+            req.user = newUser
+        }
 
         return next()
     } catch (error) {
