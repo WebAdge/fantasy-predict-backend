@@ -24,6 +24,7 @@ const UserSchema: Schema = new Schema<IUser>(
         gender: { type: "String" },
         bvn: { type: "String" },
         worldCupCampaign: { type: "Number" },
+        favouriteTeam: { type: "String" },
         dateOfBirth: { type: "Date", default: new Date() },
         deletedAt: { type: "String", default: null },
     },

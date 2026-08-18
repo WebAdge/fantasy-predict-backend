@@ -119,21 +119,38 @@ function findRouteFile(moduleDir: string): string | null {
 type MountInfo = { prefix: string; authAtMount: boolean }
 
 /** Parses src/modules/v1/index.ts for router.use(prefix, [Authenticate], subRouter) mounts. */
-function parseMountInfo(): { mounts: Record<string, MountInfo>; extraRoutes: RouteBinding[] } {
+function parseMountInfo(): {
+    mounts: Record<string, MountInfo>
+    extraRoutes: RouteBinding[]
+    extraRouteSchemaSources: Record<string, string>
+} {
     const indexPath = path.join(V1_DIR, "index.ts")
     const source = parseSourceFile(indexPath)
 
     const identifierToFolder: Record<string, string> = {}
+    // Tracks named imports pulled straight from a module's validation.ts
+    // (e.g. `import { securePaymentSchema } from "./wallets/validation"`),
+    // so schemas referenced by routes declared directly in this file can be resolved.
+    const extraRouteSchemaSources: Record<string, string> = {}
     source.forEachChild((node) => {
-        if (
-            ts.isImportDeclaration(node) &&
-            node.importClause?.name &&
-            ts.isStringLiteral(node.moduleSpecifier)
-        ) {
+        if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
             const spec = node.moduleSpecifier.text
-            if (spec.startsWith("./")) {
-                const folder = spec.split("/")[1]
-                if (folder) identifierToFolder[node.importClause.name.text] = folder
+            if (!spec.startsWith("./")) return
+            const folder = spec.split("/")[1]
+            if (!folder) return
+
+            if (node.importClause?.name) {
+                identifierToFolder[node.importClause.name.text] = folder
+            }
+
+            if (
+                spec.endsWith("/validation") &&
+                node.importClause?.namedBindings &&
+                ts.isNamedImports(node.importClause.namedBindings)
+            ) {
+                node.importClause.namedBindings.elements.forEach((el) => {
+                    extraRouteSchemaSources[el.name.text] = folder
+                })
             }
         }
     })
@@ -162,7 +179,7 @@ function parseMountInfo(): { mounts: Record<string, MountInfo>; extraRoutes: Rou
     visit(source)
 
     const extraRoutes = extractRouteBindings(source, "router")
-    return { mounts, extraRoutes }
+    return { mounts, extraRoutes, extraRouteSchemaSources }
 }
 
 /** Parses src/routes.ts for router.use("/v1", v1). */
@@ -259,7 +276,7 @@ function summarize(routePath: string, fallback: string): string {
 
 function generate() {
     const globalPrefix = parseGlobalPrefix()
-    const { mounts, extraRoutes } = parseMountInfo()
+    const { mounts, extraRoutes, extraRouteSchemaSources } = parseMountInfo()
     const moduleDirs = discoverModuleDirs()
 
     const paths: Record<string, any> = {}
@@ -332,7 +349,20 @@ function generate() {
         tags.push({ name: "Misc" })
         extraRoutes.forEach((binding) => {
             const fullPath = joinPaths(globalPrefix, binding.path)
-            addOperation(fullPath, binding, "Misc")
+            const resolveSchema = (schemaName?: string) => {
+                if (!schemaName) return undefined
+                const folder = extraRouteSchemaSources[schemaName]
+                if (!folder) return undefined
+                return loadValidationSchemas(folder)[schemaName]
+            }
+
+            addOperation(
+                fullPath,
+                binding,
+                "Misc",
+                schemaToOpenApi(resolveSchema(binding.bodySchemaName)),
+                querySchemaToParams(resolveSchema(binding.querySchemaName))
+            )
         })
     }
 

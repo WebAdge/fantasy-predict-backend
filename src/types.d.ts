@@ -26,6 +26,7 @@ interface IUser extends DefaultAttributes {
     isActive: boolean
     avatar: string
     sendNotification: boolean
+    favouriteTeam: string;
     worldCupCampaign: number;
 }
 
@@ -116,6 +117,7 @@ interface IPool extends DefaultAttributes {
         code: string
     }
     totalMembers: number
+    maxMembers?: number
     competition: string
     isActive: boolean
     createdBy: string

@@ -99,6 +99,7 @@ export const updateSchema = z
         gender: z.string().optional(),
         phoneNumber: z.string().optional(),
         avatar: z.string().optional(),
+        favouriteTeam: z.string().optional()
     })
     .strict()
 

@@ -30,7 +30,9 @@ export const validateCreate = async (
         if (!pool) throw catchError("Pool does not exist", 400)
             if (!pool.isActive) throw catchError("Pool have been closed", 400);
 
-        
+        if (pool.maxMembers && Number(pool.totalMembers) >= Number(pool.maxMembers))
+            throw catchError("This pool has reached its maximum number of members", 400);
+
         res.locals = { pool }
         return next()
     } catch (error) {

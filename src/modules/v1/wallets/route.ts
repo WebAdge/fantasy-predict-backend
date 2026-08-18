@@ -3,7 +3,8 @@
 import { Router } from "express"
 
 import { get, initializeSarepayPayment, securePayment, verifyTransaction } from "./controller"
-import { Authenticate } from "../../common/utils"
+import { Authenticate, validator } from "../../common/utils"
+import { securePaymentSchema } from "./validation"
 
 const walletRouter = Router({
     caseSensitive: true,
@@ -11,7 +12,7 @@ const walletRouter = Router({
 })
 
 walletRouter.get("/", Authenticate, get)
-walletRouter.get("/pay", securePayment)
+walletRouter.get("/pay", validator.query(securePaymentSchema), securePayment)
 walletRouter.post("/", Authenticate, initializeSarepayPayment)
 walletRouter.post("/verify-payment", verifyTransaction)
 

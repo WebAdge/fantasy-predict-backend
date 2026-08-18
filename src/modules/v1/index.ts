@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import userRouter from "./users/route";
-import { Authenticate } from "../common/utils";
+import { Authenticate, validator } from "../common/utils";
 import pinRouter from "./pins/route";
 import walletRouter from "./wallets/route";
 import transactionRouter from "./transactions/route";
@@ -11,6 +11,7 @@ import predictionRouter from "./predictions/route";
 import withdrawalRouter from "./withdrawals/route";
 import bankRouter from "./banks/route";
 import { securePayment, webhook } from "./wallets/controller";
+import { securePaymentSchema } from "./wallets/validation";
 import userCompetitionRouter from "./user-competitions/route";
 import feedbackRouter from "./feedbacks/route";
 import memberRouter from "./members/route";
@@ -38,7 +39,7 @@ router.use("/pools", Authenticate, poolRouter);
 router.use("/pool-members", Authenticate, poolMemberRouter);
 router.use("/user-competitions", Authenticate, userCompetitionRouter);
 
-router.get("/pay", securePayment)
+router.get("/pay", validator.query(securePaymentSchema), securePayment)
 router.get("/webhook", webhook)
 router.use("/settlements", settlementRouter)
 

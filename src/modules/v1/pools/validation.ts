@@ -27,6 +27,11 @@ export const createSchema = z
         privacy: z.string({ required_error: "Select Privacy" }).nonempty(),
         competition: z.string(),
         icon: z.string().optional(),
+        maxMembers: z
+            .number({ invalid_type_error: "Maximum members must be a number" })
+            .int()
+            .positive({ message: "Maximum members must be greater than 0" })
+            .optional(),
         config: z.object({
             amount: z.number(),
             paid: z.boolean(),

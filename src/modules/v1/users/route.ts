@@ -28,6 +28,7 @@ userRouter.post(
 
 userRouter.post(
     "/send-notification",
+    Authenticate,
     validator.body(notificationSchema),
     validateSendNotification,
     update

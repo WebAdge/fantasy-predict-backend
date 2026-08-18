@@ -23,6 +23,7 @@ const PoolSchema: Schema = new Schema<IPool>(
         icon: { type: "String", },
         competition: { type: "String", required: true, ref: "Competition" },
         totalMembers: { type: "Number", },
+        maxMembers: { type: "Number", },
         config: { type: configSchema, required: true },
         isActive: { type: "Boolean", default: true },
         privacy: { type: "String", enum: ['public', 'private'] },

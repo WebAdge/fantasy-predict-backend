@@ -2,34 +2,14 @@
 
 import { z } from "zod"
 
-export const basicUserValidation = z
+export const securePaymentSchema = z
     .object({
         email: z
-            .string()
+            .string({ required_error: "Enter your email" })
             .email({ message: "Provide a valid email" })
-            .nonempty({ message: "Enter your email" })
-            .trim()
-            .toLowerCase(),
-        password: z.string().nonempty({ message: "Password cannot be empty" }),
-    })
-    .required()
-    .strict()
-
-export const createSchema = z
-    .object({
-        name: z
-            .string({ required_error: "Enter pool name" })
-            .nonempty()
-            .toLowerCase(),
-        description: z
-            .string({ required_error: "Describe your pool" })
             .nonempty(),
-        privacy: z.string({ required_error: "Select Privacy" }).nonempty(),
-        config: z.object({
-            amount: z.number(),
-            paid: z.boolean(),
-            poolSharing: z.string()
-        }).required()
+        amount: z.coerce
+            .number({ required_error: "Enter amount", invalid_type_error: "Amount must be a number" })
+            .positive({ message: "Amount must be greater than 0" }),
     })
     .strict()
-
