@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv } from "crypto";
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
 
 export const decrytData = (message: string) => {
   const decipher = createDecipheriv(
@@ -28,3 +28,10 @@ export const encryptData = (message: string) => {
   }
   return result;
 };
+
+// Opaque, unguessable refresh token. Only its hash is ever persisted,
+// so a leaked database can't be used to replay a session.
+export const generateRefreshToken = () => randomBytes(48).toString("hex");
+
+export const hashToken = (token: string) =>
+  createHash("sha256").update(token).digest("hex");

@@ -4,8 +4,13 @@ import { NextFunction, Request, Response } from "express"
 import { catchError, success, tryPromise } from "../../common/utils"
 import { composeFilter } from "./helper"
 import UserService from "./service"
-import { decrytData, encryptData } from "../../common/hashings"
-import { addHours } from "date-fns"
+import {
+    decrytData,
+    encryptData,
+    generateRefreshToken,
+    hashToken,
+} from "../../common/hashings"
+import { addHours, addMinutes, isAfter } from "date-fns"
 import { randomInt } from "crypto"
 import { db } from "../../../databases/connection"
 import { IUser } from "../../../types"
@@ -99,8 +104,14 @@ export const login = async (
         }
 
         const token = encryptData(
-            JSON.stringify({ _id: user._id, exp: addHours(new Date(), 48) })
+            JSON.stringify({ _id: user._id, exp: addMinutes(new Date(), 20) })
         )
+
+        const refreshToken = generateRefreshToken()
+        await new UserService({ _id: user._id }).update({
+            refreshToken: hashToken(refreshToken),
+            refreshTokenExpiresAt: addMinutes(new Date(), 30),
+        })
 
         return res.status(200).json(
             success(
@@ -111,7 +122,58 @@ export const login = async (
                     phoneNumber: user.phoneNumber,
                     _id: user._id,
                 },
-                { token }
+                { token, refreshToken }
+            )
+        )
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const refreshToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { refreshToken: incomingToken } = req.body
+    try {
+        const [user, error] = await tryPromise(
+            new UserService({
+                refreshToken: hashToken(incomingToken),
+                isActive: true,
+            }).findOne()
+        )
+
+        if (error) throw catchError("Error processing request", 400)
+        if (!user) throw catchError("Invalid refresh token", 401)
+
+        if (
+            !user.refreshTokenExpiresAt ||
+            isAfter(new Date(), new Date(user.refreshTokenExpiresAt))
+        ) {
+            // Expired token was presented, drop it so it can't be replayed later
+            await new UserService({ _id: user._id }).update({
+                refreshToken: "",
+            })
+            throw catchError("Refresh token expired. Please login again", 401)
+        }
+
+        const token = encryptData(
+            JSON.stringify({ _id: user._id, exp: addHours(new Date(), 48) })
+        )
+
+        // Rotate: invalidate the used refresh token and issue a new one
+        const newRefreshToken = generateRefreshToken()
+        await new UserService({ _id: user._id }).update({
+            refreshToken: hashToken(newRefreshToken),
+            refreshTokenExpiresAt: addMinutes(new Date(), 30),
+        })
+
+        return res.status(200).json(
+            success(
+                "Token refreshed successfully",
+                {},
+                { token, refreshToken: newRefreshToken }
             )
         )
     } catch (error) {
@@ -152,7 +214,14 @@ export const profile = async (
 ) => {
     const user = req.user
     try {
-        const excludeFields = ["password", "otp", "promo", "nin"]
+        const excludeFields = [
+            "password",
+            "otp",
+            "promo",
+            "nin",
+            "refreshToken",
+            "refreshTokenExpiresAt",
+        ]
         const result = Object.keys(user).reduce((acc, curr) => {
             if (!excludeFields.includes(curr)) {
                 // @ts-ignore

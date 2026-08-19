@@ -15,6 +15,7 @@ export const create = async (
     next: NextFunction
 ) => {
     try {
+        let _id = ''
         const code = generateInviteCode()
         const session = await db.startSession()
         await session.withTransaction(async () => {
@@ -36,6 +37,7 @@ export const create = async (
             )
 
             if (crtError) throw catchError("An error occurred! Try again", 400)
+            _id = newPool?._id || '';
 
             if (Number(req.body.config.amount)) {
                 await debitWallet({
@@ -62,7 +64,10 @@ export const create = async (
 
         return res
             .status(201)
-            .json(success("Pool created successfully", {}, {}))
+            .json(success("Pool created successfully", {
+                code,
+                _id,
+            }, {}))
     } catch (error) {
         next(error)
     }

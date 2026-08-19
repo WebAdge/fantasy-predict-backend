@@ -2,8 +2,8 @@
 
 import { Router } from "express"
 
-import { bvnSchema, changePasswordSchema, createSchema, fetchSchema, loginSchema, notificationSchema, resendCodeSchema, resetPasswordSchema, updateSchema, verifySchema } from "./validation"
-import { update, create, fetch, login, profile, remove, userCount } from "./controller"
+import { bvnSchema, changePasswordSchema, createSchema, fetchSchema, loginSchema, notificationSchema, refreshTokenSchema, resendCodeSchema, resetPasswordSchema, updateSchema, verifySchema } from "./validation"
+import { update, create, fetch, login, profile, refreshToken, remove, userCount } from "./controller"
 import { Authenticate, validator } from "../../common/utils"
 import { validateBVN, validateChangePassword, validateCreate, validateForgetPassword, validateResendCode, validateResetPassword, validateSendNotification, verifyAccount } from "./middleware"
 
@@ -74,6 +74,12 @@ userRouter.post(
     "/login",
     validator.body(loginSchema),
     login
+)
+
+userRouter.post(
+    "/refresh-token",
+    validator.body(refreshTokenSchema),
+    refreshToken
 )
 
 userRouter.put(

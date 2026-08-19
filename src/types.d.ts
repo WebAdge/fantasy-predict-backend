@@ -23,6 +23,8 @@ interface IUser extends DefaultAttributes {
     verifiedAt: Date
     otp: string
     bvn: string
+    refreshToken: string
+    refreshTokenExpiresAt: Date
     isActive: boolean
     avatar: string
     sendNotification: boolean

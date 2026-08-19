@@ -19,6 +19,8 @@ const UserSchema: Schema = new Schema<IUser>(
         verifiedAt: { type: "Date", },
         isActive: { type: "Boolean", default: true },
         otp: { type: "String" },
+        refreshToken: { type: "String" },
+        refreshTokenExpiresAt: { type: "Date" },
         avatar: { type: "String" },
         sendNotification: { type: "Boolean", default: true },
         gender: { type: "String" },
@@ -38,6 +40,7 @@ const UserSchema: Schema = new Schema<IUser>(
 UserSchema.set("timestamps", true)
 UserSchema.plugin(mongoosePagination)
 UserSchema.index({ "email": 1, phoneNumber: 1 })
+UserSchema.index({ refreshToken: 1 }, { sparse: true })
 
 const UserModel = db.model<IUser, Pagination<IUser>>(
     "User",

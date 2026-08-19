@@ -64,6 +64,14 @@ export const loginSchema = z
     })
     .strict()
 
+export const refreshTokenSchema = z
+    .object({
+        refreshToken: z
+            .string({ required_error: "Enter refresh token" })
+            .nonempty(),
+    })
+    .strict()
+
 export const resendCodeSchema = z
     .object({
         email: z.string({ required_error: "Enter email" }).nonempty(),
