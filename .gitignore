@@ -6,3 +6,4 @@ coverage
 config.bat
 
 public/openapi.json
+.env

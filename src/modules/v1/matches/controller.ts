@@ -76,7 +76,7 @@ export const fetch = async (
 
         result = matches || []
 
-        if (!matches) {
+        if (!matches?.length) {
             await getMatchWeek({
                 ...req.query,
                 userId: req.user._id,
