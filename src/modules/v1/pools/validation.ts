@@ -41,6 +41,8 @@ export const createSchema = z
 
     export const fetchSchema = z
     .object({
+        page: z.string().optional(),
+        limit: z.string().optional(),
         name: z.string().optional(),
         privacy: z.string().optional(),
         createdBy: z.string().optional(),
