@@ -3,16 +3,16 @@ import { ITransaction } from "../../../types";
 import { randomInt } from "crypto";
 
 export const composeFilter = (req: Request) => {
-    const { 
+    const {
         user,
-            amount,
-            wallet,
-            status,
-            type,
-            reference,
-            currency,
-            isAdmin
-     } = req.query;
+        amount,
+        wallet,
+        status,
+        type,
+        reference,
+        currency,
+        isAdmin
+    } = req.query;
     let filter = {}
 
     if (!isAdmin) filter = { ...filter, user: req.user._id };
@@ -27,14 +27,14 @@ export const composeFilter = (req: Request) => {
     return filter;
 }
 
-const transactionReference = `ONE-${randomInt(1000,9999)}-${new Date().getTime()}`
+const transactionReference = `FT-${randomInt(1000, 9999)}-${new Date().getTime()}`
 
 export const composeTransactionDoc = (params: Record<string, any>): ITransaction => {
     return {
         user: params.user || params.userId || params.wallet.user,
         fee: params.fee || 0,
         amount: Number(params.amount),
-        wallet:  params.wallet._id || params.wallet,
+        wallet: params.wallet._id || params.wallet,
         status: params.status || "pending",
         type: params.type || "debit",
         reference: transactionReference,

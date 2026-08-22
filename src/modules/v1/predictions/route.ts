@@ -5,13 +5,14 @@ import { Router } from "express"
 import { applicationInReview, competitionLeaderboard, create, leaderboard, sendPredictionMail } from "./controller"
 import { validator } from "../../common/utils"
 import { competitionLeaderboardSchema, createSchema, inReviewSchema, leaderboardSchema, sendMailSchema } from "./validation"
+import { validateCreate } from "./middleware"
 
 const predictionRouter = Router({
     caseSensitive: true,
     strict: true,
 })
 
-predictionRouter.post("/", validator.body(createSchema), create)
+predictionRouter.post("/", validator.body(createSchema), validateCreate, create)
 
 predictionRouter.get("/", validator.query(leaderboardSchema), leaderboard);
 predictionRouter.post("/send-mail", validator.body(sendMailSchema), sendPredictionMail);
