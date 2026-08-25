@@ -80,6 +80,7 @@ export const scorePipeline = (
         {
             $match: {
                 competition,
+                isActive: true,
                 $and: [
                     { "awayTeam.score": { $ne: null } },
                     { "homeTeam.score": { $ne: null } },
