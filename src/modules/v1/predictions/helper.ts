@@ -121,13 +121,13 @@ export const calculatePredictionPoint = (
 
 
     if (Number(predictedHomeOutcome) === Number(homeScore) && Number(predictedAwayOutcome) === Number(awayScore)) {
-        point = 3
+        point = 5
     } else if (predictedHomeWin && resultedHomeWin) {
-        point = 2
+        point = 3
     } else if (predictedAwayWin && resultedAwayWin) {
         point = 2;
     } else if (predictedDraw && resultedDraw) {
-        point = 1
+        point = 2
     } else {
         point = 0
     }

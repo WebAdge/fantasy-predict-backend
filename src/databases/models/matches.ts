@@ -19,6 +19,7 @@ const MatchSchema: Schema = new Schema<IMatch>(
         matchday: { type: "String", required: true },
         date: { type: "Date", required: true },
         stage: { type: "String", required: true },
+        isActive: { type: "Boolean", required: true, default: true, },
         matchId: { type: "String" },
         homeTeam: { type: teamSchema, required: true },
         awayTeam: { type: teamSchema, required: true },

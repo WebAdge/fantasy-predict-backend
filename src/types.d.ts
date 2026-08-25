@@ -274,6 +274,7 @@ interface IMatch extends DefaultAttributes {
         crest: string
         score: number | null
     }
+    isActive: boolean
     matchday: string
     date: Date
     competition: string

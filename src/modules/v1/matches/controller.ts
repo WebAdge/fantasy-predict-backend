@@ -39,6 +39,7 @@ export const getMatchWeek = async (query: Record<string, string>) => {
         const newMatches = matchQuery.map(match => ({
             status: match.status.toLowerCase(),
             matchId: String(match.id),
+            isActive: true,
             homeTeam: {
                 name: match.homeTeam.name,
                 shortName: match.homeTeam.shortName,

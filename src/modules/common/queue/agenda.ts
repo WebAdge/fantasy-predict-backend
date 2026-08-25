@@ -1,12 +1,15 @@
 /** @format */
 
 import { Agenda } from "@hokify/agenda"
-import { configs } from "../utils/config"
+import dbConfig from "../../../databases/connection/config"
+import '../jobs/auto-jobs'
+
+const NODE_ENV = process.env.NODE_ENV as "development" | "staging" | "production"
 
 const agenda = new Agenda({
 name: "Predict Contest",
     defaultConcurrency: 5,
-    db: { address: configs.DB_URL, collection: "cronjobs" },
+    db: { address: dbConfig[NODE_ENV].MONGO_URI, collection: "cronjobs" },
 })
 
 agenda
