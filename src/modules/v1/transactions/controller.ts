@@ -13,7 +13,9 @@ export const fetch = async (
     const { page, limit } = req.query
     try {
         const [transactions, error] = await tryPromise(
-            new TransactionService({ ...composeFilter(req) }).findAll({}, Number(page), Number(limit))
+            new TransactionService({}).findAll({
+                ...composeFilter(req)
+            }, Number(page), Number(limit))
         )
 
         if (error) throw catchError("Error processing request", 400)
