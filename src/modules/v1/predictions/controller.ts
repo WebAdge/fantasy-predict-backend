@@ -21,7 +21,7 @@ export const create = async (
     try {
         const [dbMatch, dbPrediction] = await Promise.all([
             new MatchService({ _id: match }).findOne(),
-            new PredictionService({ match, pool }).findOne(),
+            new PredictionService({ match, ...(pool && { pool }) }).findOne(),
         ])
 
         if (!dbMatch) throw catchError("Match does not exists", 400)
@@ -163,7 +163,7 @@ export const sendPredictionMail = async (
     try {
         const result = await new UserService({ _id: String(req.user._id) }).findOne();
         if (!result) throw catchError("User not found", 404)
-            const [matches] = await tryPromise(
+        const [matches] = await tryPromise(
             new MatchService({}).aggregate(
                 matchPipeline(
                     {
@@ -175,10 +175,10 @@ export const sendPredictionMail = async (
             )
         )
         new Email().SendEmail(
-                result,
-                "Your verification code",
-                generatePicksEmail({ round: `Matchday ${matchday} Picks`, picks: matches || [] as any })
-            )
+            result,
+            "Your verification code",
+            generatePicksEmail({ round: `Matchday ${matchday} Picks`, picks: matches || [] as any })
+        )
     } catch (error) {
         next(error)
     }
