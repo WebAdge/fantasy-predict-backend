@@ -13,6 +13,7 @@ const adminRouter = Router({
 
 adminRouter.post(
     "/",
+    Authenticate,
     validator.body(createSchema),
     create
 )
@@ -47,6 +48,11 @@ adminRouter.delete(
     remove
 )
 
-adminRouter.get("/", validator.body(fetchSchema), fetch)
+adminRouter.get(
+    "/",
+    Authenticate,
+    validator.body(fetchSchema), 
+    fetch
+)
 
 export default adminRouter
