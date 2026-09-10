@@ -21,7 +21,10 @@ export const create = async (
     try {
         const [dbMatch, dbPrediction] = await Promise.all([
             new MatchService({ _id: match }).findOne(),
-            new PredictionService({ match, ...(pool && { pool }) }).findOne(),
+            new PredictionService({
+                match, ...(pool && { pool }),
+                user: String(req.user._id)
+            }).findOne(),
         ])
 
         if (!dbMatch) throw catchError("Match does not exists", 400)
