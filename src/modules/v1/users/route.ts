@@ -96,7 +96,7 @@ userRouter.get(
 )
 
 userRouter.delete(
-    "/profile",
+    "/profile/:userId",
     Authenticate,
     remove
 )

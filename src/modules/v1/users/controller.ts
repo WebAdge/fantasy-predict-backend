@@ -243,8 +243,14 @@ export const remove = async (
     res: Response,
     next: NextFunction
 ) => {
-    const user = req.user
+    const { userId } = req.params;
     try {
+        if (!req.admin) throw catchError("No Permission", 400);
+
+        const user = await new UserService({ _id: userId }).findOne();
+        if (!user) throw catchError("Invalid User.", 404);
+        if (!user.isActive) throw catchError("Account already suspended", 400);
+
         await new UserService({ _id: user._id }).update({ isActive: false })
 
         return res.status(200).json(success("Account deleted successfully", {}))

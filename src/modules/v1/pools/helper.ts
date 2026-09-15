@@ -12,7 +12,8 @@ export const composeFilter = (req: Request) => {
     if (name) filter = { ...filter, name }
     if (createdBy) filter = { ...filter, createdBy }
     if (privacy) filter = { ...filter, privacy }
-    if (personal) filter = { createdBy: String(req.user._id) }
+    if (personal) filter = { ...filter, createdBy: String(req.user._id) }
+    if (req.user?._id) filter = { ...filter, createdBy: String(req.user._id) }
 
     return filter
 }
